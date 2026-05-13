@@ -1,4 +1,5 @@
 import { X, MapPin, Calendar, Flag, Share2, Image } from 'lucide-react'
+import MapComponent from './MapComponent'  
 
 const REPORT_TYPES = {
   bache: { icon: '🕳️', name: 'Bache' },
@@ -61,7 +62,7 @@ function ReportModal({ isOpen, onClose, report, onUpdateStatus }) {
             <p className="text-slate-600">{report.description}</p>
           </div>
 
-          {/* ✅ NUEVO: Evidencia Fotográfica (RF3 - Opcional) */}
+          {/* Evidencia Fotográfica */}
           {report.imageUrl && (
             <div>
               <h4 className="font-semibold text-slate-700 mb-2 flex items-center gap-2">
@@ -109,15 +110,24 @@ function ReportModal({ isOpen, onClose, report, onUpdateStatus }) {
             </div>
           </div>
           
-          {/* Mapa pequeño con coordenadas */}
+          {/*Mapa real con Leaflet */}
           {report.lat && report.lng && (
             <div>
               <h4 className="font-semibold text-slate-700 mb-2">Ubicación en Mapa</h4>
-              <div className="map-container" style={{ height: '250px' }}>
-                <div className="bg-slate-100 h-full flex items-center justify-center rounded-xl">
-                  <p className="text-slate-500">📍 {report.lat.toFixed(4)}, {report.lng.toFixed(4)}</p>
-                </div>
+              
+              {/* Contenedor con altura definida para Leaflet */}
+              <div className="rounded-xl overflow-hidden border-2 border-slate-200" style={{ height: '250px' }}>
+                <MapComponent 
+                  selectedLocation={{ lat: report.lat, lng: report.lng }}
+                  reports={[]}
+                  onLocationSelect={() => {}}  // No necesita funcionalidad en el modal
+                />
               </div>
+              
+              {/* Coordenadas como texto adicional */}
+              <p className="text-xs text-slate-400 mt-1 text-center">
+                {report.lat.toFixed(4)}, {report.lng.toFixed(4)}
+              </p>
             </div>
           )}
           
