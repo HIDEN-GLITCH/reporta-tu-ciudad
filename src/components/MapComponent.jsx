@@ -8,27 +8,33 @@ function MapComponent({ onLocationSelect, selectedLocation, reports = [] }) {
   const markersRef = useRef([])
 
   useEffect(() => {
-    if (!mapInstance.current && mapRef.current) {
-      mapInstance.current = L.map(mapRef.current).setView([19.4326, -99.1332], 13)
-      
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(mapInstance.current)
-      
-      mapInstance.current.on('click', (e) => {
-        if (onLocationSelect) {
-          onLocationSelect({ lat: e.latlng.lat, lng: e.latlng.lng })
-        }
-      })
-    }
+  if (!mapInstance.current && mapRef.current) {
+    mapInstance.current = L.map(mapRef.current).setView([19.4326, -99.1332], 13)
     
-    return () => {
-      if (mapInstance.current) {
-        mapInstance.current.remove()
-        mapInstance.current = null;
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(mapInstance.current)
+    
+    mapInstance.current.on('click', (e) => {
+      if (onLocationSelect) {
+        onLocationSelect({ lat: e.latlng.lat, lng: e.latlng.lng })
       }
+    })
+    
+    setTimeout(() => {
+      if (mapInstance.current) {
+        mapInstance.current.invalidateSize()
+      }
+    }, 100)
+  }
+  
+  return () => {
+    if (mapInstance.current) {
+      mapInstance.current.remove()
+      mapInstance.current = null;
     }
-  }, [])
+  }
+}, [])
 
   useEffect(() => {
     if (mapInstance.current && selectedLocation) {
@@ -71,7 +77,13 @@ function MapComponent({ onLocationSelect, selectedLocation, reports = [] }) {
     }
   }, [reports])
 
-  return <div ref={mapRef} className="map-container w-full"></div>
+  return (
+  <div 
+    ref={mapRef} 
+    className="map-container w-full h-[400px] rounded-lg shadow-lg border border-gray-200"
+    style={{ minHeight: '400px' }}
+  ></div>
+)
 }
 
 export default MapComponent
